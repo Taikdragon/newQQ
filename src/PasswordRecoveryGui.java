@@ -52,6 +52,9 @@ public class PasswordRecoveryGui extends JDialog {
         try (FileInputStream input = new FileInputStream(src.UserStorage.USER_DATA_FILE)) {
             prop.load(input);
             String storedHash = prop.getProperty(username);
+
+            System.out.println("Search Hash: " + storedHash);
+
             if (storedHash != null) {
                 resultLabel.setText("密码哈希值: " + storedHash);
                 resultLabel.setForeground(Color.BLUE);

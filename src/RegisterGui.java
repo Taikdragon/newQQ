@@ -75,6 +75,10 @@ public class RegisterGui extends JDialog{
             // 哈希密码
             String hashedPassword = src.UserStorage.hashPassword(password);
             // 保存用户
+
+            System.out.println("Register Username Hash: " + username);
+            System.out.println("Register Password Hash: " + hashedPassword);
+
             if (src.UserStorage.addUser(username, hashedPassword)) {
                 JOptionPane.showMessageDialog(this, "注册成功，欢迎 " + username + "！", "注册成功", JOptionPane.INFORMATION_MESSAGE);
                 dispose();
