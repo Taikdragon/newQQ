@@ -156,10 +156,8 @@ public class JoinGui {
 
             if (isValid) {
                 JOptionPane.showMessageDialog(jPanel, "登录成功！", "信息", JOptionPane.INFORMATION_MESSAGE);
-
-
-
-                //JOptionPane.showMessageDialog(jPanel, qqNumber , hashedPassword, JOptionPane.INFORMATION_MESSAGE);
+                jFrame.dispose(); // 关闭登录窗口
+                new src.ChatGui(qqNumber).setVisible(true); // 打开聊天窗口
             } else {
                 JOptionPane.showMessageDialog(jPanel, "QQ号或密码错误！", "错误", JOptionPane.ERROR_MESSAGE);
             }
