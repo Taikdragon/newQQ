@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c536506d-6ef8-4803-a67d-805140179400" name="更改" comment="V2.2.2">
+    <list default="true" id="c536506d-6ef8-4803-a67d-805140179400" name="更改" comment="V2.2.3">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ChatClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ChatClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ChatGui.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ChatGui.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/JoinGui.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/JoinGui.java" afterDir="false" />
     </list>
@@ -45,7 +46,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "V2.2bugout",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "F:/Chat/newQQcilentUser1",
+    "last_opened_file_path": "F:/Chat/newQQcilentUser2",
     "onboarding.tips.debug.path": "E:/forge/newQQ/src/Main.java",
     "应用程序.JoinGui.executor": "Run"
   }
@@ -131,7 +132,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740237423350</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="V2.2.3">
+      <option name="closed" value="true" />
+      <created>1740238666206</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1740238666206</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -160,7 +169,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="master" />
+                        <option value="V2.2bugout" />
                       </list>
                     </value>
                   </entry>
@@ -182,6 +191,7 @@
     <MESSAGE value="V2.2" />
     <MESSAGE value="V2.2.1" />
     <MESSAGE value="V2.2.2" />
-    <option name="LAST_COMMIT_MESSAGE" value="V2.2.2" />
+    <MESSAGE value="V2.2.3" />
+    <option name="LAST_COMMIT_MESSAGE" value="V2.2.3" />
   </component>
 </project>

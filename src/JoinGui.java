@@ -195,11 +195,11 @@ public class JoinGui {
             if (response.startsWith("SUCCESS")) {
                 JOptionPane.showMessageDialog(jPanel, "登录成功！", "信息", JOptionPane.INFORMATION_MESSAGE);
                 jFrame.dispose();
-                // 将Socket传递给聊天界面，而不是关闭
+                // 传递Socket到聊天界面
                 new src.ChatGui(username, socket).setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(jPanel, response.split(":")[1], "错误", JOptionPane.ERROR_MESSAGE);
-                socket.close(); // 登录失败时关闭连接
+                socket.close(); // 登录失败时关闭
             }
         } catch (IOException | NoSuchAlgorithmException e) {
             JOptionPane.showMessageDialog(jPanel, "连接服务端失败！", "错误", JOptionPane.ERROR_MESSAGE);

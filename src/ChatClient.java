@@ -8,9 +8,10 @@ public class ChatClient {
     private PrintWriter out;
     private String username;
 
-    public ChatClient(String serverAddress, int serverPort, String username) throws IOException {
+    // 使用现有Socket构造
+    public ChatClient(Socket socket, String username) throws IOException {
+        this.socket = socket;
         this.username = username;
-        socket = new Socket(serverAddress, serverPort);
         out = new PrintWriter(socket.getOutputStream(), true);
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -18,7 +19,7 @@ public class ChatClient {
         new Thread(new MessageReceiver(in)).start();
     }
 
-    // 发送消息方法（直接透传服务端命令）
+    // 发送消息方法
     public void sendMessage(String message) {
         out.println(message);
     }

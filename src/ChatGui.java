@@ -10,18 +10,19 @@ public class ChatGui extends JFrame {
     private static JTextArea messageArea;
     private JTextField inputField;
     private src.ChatClient client;
-    private String username; // 新增字段保存用户名
+    private String username;
 
+    // 使用传入的Socket构造
     public ChatGui(String username, Socket socket) {
-        this.username = username; // 初始化用户名
+        this.username = username;
         setTitle("QQ聊天 - 欢迎 " + username);
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // 连接服务器
         try {
-            client = new src.ChatClient("192.168.0.103", 12345, username);
+            // 复用登录时的Socket创建ChatClient
+            client = new src.ChatClient(socket, username);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "连接异常", "错误", JOptionPane.ERROR_MESSAGE);
             System.exit(0);
@@ -47,7 +48,6 @@ public class ChatGui extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String message = inputField.getText().trim();
                 if (!message.isEmpty()) {
-                    // 格式：CHAT:用户名:消息内容
                     client.sendMessage("CHAT:" + username + ":" + message);
                     appendMessage("我: " + message);
                     inputField.setText("");
