@@ -154,6 +154,7 @@ public class JoinGui {
             boolean isValid = src.UserStorage.validateUser(qqNumber, hashedPassword);
             System.out.println("Validation Result: " + isValid); // 调试输出
 
+            // 修改登录成功部分代码
             if (isValid) {
                 JOptionPane.showMessageDialog(jPanel, "登录成功！", "信息", JOptionPane.INFORMATION_MESSAGE);
                 jFrame.dispose(); // 关闭登录窗口
