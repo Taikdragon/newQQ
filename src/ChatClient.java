@@ -27,7 +27,12 @@ public class ChatClient {
 
     // 发送消息方法
     public void sendMessage(String message) {
-        out.println(message);
+        if (out != null) {
+            System.out.println("[DEBUG] 发送消息: " + message); // 调试日志
+            out.println(message);
+        } else {
+            System.out.println("[ERROR] 输出流未初始化");
+        }
     }
 
     // 消息接收线程
@@ -36,17 +41,11 @@ public class ChatClient {
         public void run() {
             try {
                 String response;
-                while ((response = in.readLine()) != null) {
-                    src.ChatGui.appendMessage(response);
+                while ((response = in.readLine()) != null) { // 必须持续监听
+                    src.ChatGui.appendMessage(response); // 必须调用此方法
                 }
             } catch (IOException e) {
                 System.out.println("与服务器的连接已断开");
-            } finally {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    // Ignore
-                }
             }
         }
     }

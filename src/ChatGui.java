@@ -44,7 +44,8 @@ public class ChatGui extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String message = inputField.getText().trim();
                 if (!message.isEmpty()) {
-                    client.sendMessage(message); // 必须调用此方法
+                    client.sendMessage(message);
+                    appendMessage("我: " + message); // 直接本地显示
                     inputField.setText("");
                 }
             }
@@ -65,9 +66,8 @@ public class ChatGui extends JFrame {
     }
 
     public static void appendMessage(String message) {
-        SwingUtilities.invokeLater(() -> {
+        SwingUtilities.invokeLater(() -> { // 必须使用此方法更新 UI
             messageArea.append(message + "\n");
-            // 自动滚动到底部
             messageArea.setCaretPosition(messageArea.getDocument().getLength());
         });
     }
