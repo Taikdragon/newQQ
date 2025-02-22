@@ -3,14 +3,14 @@ package src;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
+import java.io.*;
+import java.net.Socket;
 
 public class PasswordRecoveryGui extends JDialog {
     private JTextField usernameField;
     private JLabel resultLabel;
+    private static final String SERVER_IP = "192.168.0.103"; // 服务端 IP
+    private static final int SERVER_PORT = 12345;            // 服务端端口
 
     public PasswordRecoveryGui(JFrame parent) {
         super(parent, "找回密码", true);
@@ -43,29 +43,37 @@ public class PasswordRecoveryGui extends JDialog {
     private void onSearch(ActionEvent e) {
         String username = usernameField.getText().trim();
         if (username.isEmpty()) {
-            resultLabel.setText("用户名不能为空！");
-            resultLabel.setForeground(Color.RED);
+            updateResultLabel("用户名不能为空！", Color.RED);
             return;
         }
 
-        Properties prop = new Properties();
-        try (FileInputStream input = new FileInputStream(src.UserStorage.USER_DATA_FILE)) {
-            prop.load(input);
-            String storedHash = prop.getProperty(username);
+        try (Socket socket = new Socket(SERVER_IP, SERVER_PORT);
+             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 
-            System.out.println("Search Hash: " + storedHash);
+            // 发送找回密码命令: FIND_PASSWORD:用户名
+            out.println("FIND_PASSWORD:" + username + ":");
 
-            if (storedHash != null) {
-                resultLabel.setText("密码哈希值: " + storedHash);
-                resultLabel.setForeground(Color.BLUE);
+            // 接收服务端响应
+            String response = in.readLine();
+            if (response.startsWith("SUCCESS")) {
+                String email = response.split(":")[1].trim();
+                updateResultLabel("安全邮箱: " + email, Color.BLUE);
             } else {
-                resultLabel.setText("此用户未注册！");
-                resultLabel.setForeground(Color.RED);
+                updateResultLabel(response.split(":")[1], Color.RED);
             }
+
         } catch (IOException ex) {
-            resultLabel.setText("数据读取失败！");
-            resultLabel.setForeground(Color.RED);
+            updateResultLabel("连接服务端失败", Color.RED);
             ex.printStackTrace();
         }
+    }
+
+    // 线程安全的界面更新方法
+    private void updateResultLabel(String text, Color color) {
+        SwingUtilities.invokeLater(() -> {
+            resultLabel.setText(text);
+            resultLabel.setForeground(color);
+        });
     }
 }

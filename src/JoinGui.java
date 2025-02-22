@@ -41,7 +41,7 @@ public class JoinGui {
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jFrame.setLocationRelativeTo(null);
 
-        // 初始化head标签并设置图片
+        // 初始化head标签并设置图片new
         /*
         head = new JLabel(new ImageIcon(JoinGui.class.getResource("/src/picture/head.png")));
         jFrame.add(head, BorderLayout.NORTH);
