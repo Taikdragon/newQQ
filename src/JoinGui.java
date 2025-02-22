@@ -17,7 +17,7 @@ public class JoinGui {
     private JLabel QQhao;
     private JLabel mima;
     private JCheckBox jCheckBox;
-    private JCheckBox jCheckBox1;
+    private JCheckBox jChneweckBox1;
     private JButton passworld;
     private JButton name;
     private JTextField jTextField;
