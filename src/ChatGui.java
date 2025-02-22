@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.net.Socket;
 
 public class ChatGui extends JFrame {
     private static JTextArea messageArea;
@@ -11,7 +12,7 @@ public class ChatGui extends JFrame {
     private src.ChatClient client;
     private String username; // 新增字段保存用户名
 
-    public ChatGui(String username) {
+    public ChatGui(String username, Socket socket) {
         this.username = username; // 初始化用户名
         setTitle("QQ聊天 - 欢迎 " + username);
         setSize(600, 400);
@@ -22,7 +23,7 @@ public class ChatGui extends JFrame {
         try {
             client = new src.ChatClient("192.168.0.103", 12345, username);
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "无法连接到服务器", "错误", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "连接异常", "错误", JOptionPane.ERROR_MESSAGE);
             System.exit(0);
         }
 
