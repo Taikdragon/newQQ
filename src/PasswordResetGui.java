@@ -3,11 +3,16 @@ package src;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.*;
+import java.net.*;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
 
 public class PasswordResetGui extends JDialog {
     private JTextField usernameField;
     private JPasswordField newPasswordField;
     private JLabel statusLabel;
+
 
     public PasswordResetGui(JFrame parent) {
         super(parent, "重置密码", true);
@@ -44,6 +49,7 @@ public class PasswordResetGui extends JDialog {
         add(panel);
     }
 
+    /*
     private void onReset(ActionEvent e) {
         String username = usernameField.getText().trim();
         String newPassword = new String(newPasswordField.getPassword());
@@ -62,6 +68,38 @@ public class PasswordResetGui extends JDialog {
             }
         } catch (Exception ex) {
             showError("系统错误，请重试");
+            ex.printStackTrace();
+        }
+    }
+    */
+
+    private void onReset(ActionEvent e) {
+        String username = usernameField.getText().trim();
+        String newPassword = new String(newPasswordField.getPassword());
+
+        try {
+            // 连接服务端
+            Socket socket = new Socket("192.168.0.103", 12345);
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            // 发送重置命令：RESET_PASSWORD:用户名:新密码哈希
+            String newHash = src.UserStorage.hashPassword(newPassword);
+            out.println("RESET_PASSWORD:" + username + ":" + newHash);
+
+            // 接收服务端响应
+            String response = in.readLine();
+            if (response.startsWith("SUCCESS")) {
+                statusLabel.setText("密码重置成功");
+                statusLabel.setForeground(Color.BLUE);
+            } else {
+                statusLabel.setText(response.split(":")[1]);
+                statusLabel.setForeground(Color.RED);
+            }
+
+            socket.close();
+        } catch (IOException | NoSuchAlgorithmException ex) {
+            showError("连接服务端失败");
             ex.printStackTrace();
         }
     }

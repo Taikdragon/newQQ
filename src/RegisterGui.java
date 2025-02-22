@@ -5,6 +5,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.security.NoSuchAlgorithmException;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 public class RegisterGui extends JDialog{
 
@@ -61,7 +64,7 @@ public class RegisterGui extends JDialog{
         // 可以继续添加其他注册所需字段...
     }
 
-
+/*
     private void onRegister() {
         String username = usernameField.getText();
         String password = new String(passwordField.getPassword());
@@ -90,6 +93,43 @@ public class RegisterGui extends JDialog{
             }
         } catch (NoSuchAlgorithmException e) {
             JOptionPane.showMessageDialog(this, "密码加密失败！", "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+ */
+
+    private void onRegister() {
+        String username = usernameField.getText();
+        String password = new String(passwordField.getPassword());
+
+        if (username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "用户名和密码不能为空！", "注册错误", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            // 连接服务端
+            Socket socket = new Socket("192.168.0.103", 12345);
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            // 发送注册命令：REGISTER:用户名:密码哈希
+            String hashedPassword = src.UserStorage.hashPassword(password);
+            out.println("REGISTER:" + username + ":" + hashedPassword);
+
+            // 接收服务端响应
+            String response = in.readLine();
+            if (response.startsWith("SUCCESS")) {
+                JOptionPane.showMessageDialog(this, "注册成功！", "注册成功", JOptionPane.INFORMATION_MESSAGE);
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, response.split(":")[1], "注册错误", JOptionPane.ERROR_MESSAGE);
+            }
+
+            socket.close();
+        } catch (IOException | NoSuchAlgorithmException e) {
+            JOptionPane.showMessageDialog(this, "连接服务端失败！", "错误", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }

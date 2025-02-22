@@ -5,6 +5,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.security.NoSuchAlgorithmException;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 public class JoinGui {
 
@@ -136,6 +139,7 @@ public class JoinGui {
 
     }
 
+    /*
     private void onLoginButtonClicked() {
         String qqNumber = jTextField.getText();
         char[] passwordChars = jPasswordField.getPassword();
@@ -167,6 +171,39 @@ public class JoinGui {
             e.printStackTrace();
         } finally {
             java.util.Arrays.fill(passwordChars, '0'); // 清除密码
+        }
+    }
+
+     */
+
+    private void onLoginButtonClicked() {
+        String username = jTextField.getText();
+        String password = new String(jPasswordField.getPassword());
+
+        try {
+            // 连接服务端
+            Socket socket = new Socket("192.168.0.103", 12345);
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            // 发送登录命令：LOGIN:用户名:密码哈希
+            String hashedPassword = src.UserStorage.hashPassword(password);
+            out.println("LOGIN:" + username + ":" + hashedPassword);
+
+            // 接收服务端响应
+            String response = in.readLine();
+            if (response.startsWith("SUCCESS")) {
+                JOptionPane.showMessageDialog(jPanel, "登录成功！", "信息", JOptionPane.INFORMATION_MESSAGE);
+                jFrame.dispose();
+                new src.ChatGui(username).setVisible(true); // 进入聊天界面
+            } else {
+                JOptionPane.showMessageDialog(jPanel, response.split(":")[1], "错误", JOptionPane.ERROR_MESSAGE);
+            }
+
+            socket.close();
+        } catch (IOException | NoSuchAlgorithmException e) {
+            JOptionPane.showMessageDialog(jPanel, "连接服务端失败！", "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 

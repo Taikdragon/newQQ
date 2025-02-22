@@ -18,7 +18,8 @@ public class ChatGui extends JFrame {
 
         // 连接服务器
         try {
-            client = new src.ChatClient("localhost", 12345, username);
+            //client = new src.ChatClient("localhost", 12345, username);
+            client = new src.ChatClient("192.168.0.103", 12345, username);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "无法连接到服务器", "错误", JOptionPane.ERROR_MESSAGE);
             System.exit(0);
