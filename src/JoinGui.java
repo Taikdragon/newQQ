@@ -114,7 +114,14 @@ public class JoinGui {
             }
         });
 
+        name = new JButton("重置账户");
+        name.setBounds(330, 95, 85, 20);
+        jPanel.add(name);
 
+        name.addActionListener(e -> {
+            // 弹出密码重置窗口
+            new src.PasswordResetGui(jFrame).setVisible(true);
+        });
 
         jFrame.add(jPanel);
         jFrame.setVisible(true);
@@ -125,6 +132,8 @@ public class JoinGui {
                 new src.PasswordRecoveryGui(jFrame).setVisible(true);
             }
         });
+
+
     }
 
     private void onLoginButtonClicked() {
@@ -147,6 +156,9 @@ public class JoinGui {
 
             if (isValid) {
                 JOptionPane.showMessageDialog(jPanel, "登录成功！", "信息", JOptionPane.INFORMATION_MESSAGE);
+
+
+
                 //JOptionPane.showMessageDialog(jPanel, qqNumber , hashedPassword, JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(jPanel, "QQ号或密码错误！", "错误", JOptionPane.ERROR_MESSAGE);

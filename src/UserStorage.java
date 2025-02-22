@@ -69,4 +69,28 @@ public class UserStorage {
         byte[] bytes = md.digest();
         return Base64.getEncoder().encodeToString(bytes);
     }
+
+
+    public static boolean resetPassword(String username, String newPassword) {
+        Properties prop = new Properties();
+        try (InputStream input = new FileInputStream(USER_DATA_FILE)) {
+            prop.load(input);
+        } catch (IOException e) { /* 处理异常 */ }
+
+        if (!prop.containsKey(username)) return false;
+
+        try {
+            String newHash = hashPassword(newPassword);
+            prop.setProperty(username, newHash);
+
+            try (OutputStream output = new FileOutputStream(USER_DATA_FILE)) {
+                prop.store(output, "Updated Password");
+                return true;
+            }
+        } catch (NoSuchAlgorithmException | IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

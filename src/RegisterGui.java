@@ -67,6 +67,9 @@ public class RegisterGui extends JDialog{
         String password = new String(passwordField.getPassword());
 
         if (username.isEmpty() || password.isEmpty()) {
+
+            System.out.println("Register is empty");
+
             JOptionPane.showMessageDialog(this, "用户名和密码不能为空！", "注册错误", JOptionPane.ERROR_MESSAGE);
             return;
         }
