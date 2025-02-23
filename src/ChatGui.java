@@ -33,20 +33,17 @@ public class ChatGui extends JFrame {
 
         JPanel mainPanel = new JPanel(new BorderLayout());
 
-        // 消息显示区域
         messageArea = new JTextArea();
         messageArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(messageArea);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // 用户列表
         userListModel = new DefaultListModel<>();
         userList = new JList<>(userListModel);
         JScrollPane userScrollPane = new JScrollPane(userList);
         userScrollPane.setPreferredSize(new Dimension(150, 0));
         mainPanel.add(userScrollPane, BorderLayout.EAST);
 
-        // 输入面板
         JPanel inputPanel = new JPanel(new BorderLayout());
         inputField = new JTextField();
         JButton sendButton = new JButton("发送");

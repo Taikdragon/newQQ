@@ -15,7 +15,6 @@ public class ChatClient {
         out = new PrintWriter(socket.getOutputStream(), true);
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-        // 心跳线程
         new Thread(() -> {
             while (true) {
                 try {
