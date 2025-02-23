@@ -1,5 +1,6 @@
 package src;
 
+import javax.net.ssl.SSLSocketFactory;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -79,7 +80,12 @@ public class PasswordResetGui extends JDialog {
 
         try {
             // 连接服务端
-            Socket socket = new Socket("192.168.0.103", 12345);
+            //Socket socket = new Socket("192.168.0.103", 12345);
+
+            // 替换原有Socket连接代码
+            SSLSocketFactory sslSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+            Socket socket = sslSocketFactory.createSocket("192.168.0.103", 12345);
+
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
