@@ -15,7 +15,7 @@ public class ChatGui extends JFrame {
     private src.ChatClient client;
     private String username;
     private static DefaultListModel<String> userListModel;
-    private JList<String> userList;
+    private static JList<String> userList;
 
     public ChatGui(String username, Socket socket) {
         this.username = username;
@@ -24,6 +24,13 @@ public class ChatGui extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
+        // 初始化用户列表模型和组件
+        userListModel = new DefaultListModel<>();
+        userList = new JList<>(userListModel);
+        userList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane userScrollPane = new JScrollPane(userList);
+        userScrollPane.setPreferredSize(new Dimension(150, 0));
+
         try {
             client = new src.ChatClient(socket, username);
         } catch (IOException e) {
@@ -31,24 +38,25 @@ public class ChatGui extends JFrame {
             System.exit(0);
         }
 
+        // 主面板布局
         JPanel mainPanel = new JPanel(new BorderLayout());
 
+        // 消息显示区域
         messageArea = new JTextArea();
         messageArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(messageArea);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-        userListModel = new DefaultListModel<>();
-        userList = new JList<>(userListModel);
-        JScrollPane userScrollPane = new JScrollPane(userList);
-        userScrollPane.setPreferredSize(new Dimension(150, 0));
+        // 用户列表添加到右侧
         mainPanel.add(userScrollPane, BorderLayout.EAST);
 
+        // 输入面板
         JPanel inputPanel = new JPanel(new BorderLayout());
         inputField = new JTextField();
         JButton sendButton = new JButton("发送");
         JButton fileButton = new JButton("发送文件");
 
+        // 发送消息动作
         Action sendAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -61,6 +69,7 @@ public class ChatGui extends JFrame {
             }
         };
 
+        // 文件发送按钮事件
         fileButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             if (fileChooser.showOpenDialog(ChatGui.this) == JFileChooser.APPROVE_OPTION) {
@@ -75,9 +84,11 @@ public class ChatGui extends JFrame {
             }
         });
 
+        // 绑定发送动作
         sendButton.addActionListener(sendAction);
         inputField.addActionListener(sendAction);
 
+        // 输入面板布局
         inputPanel.add(fileButton, BorderLayout.WEST);
         inputPanel.add(inputField, BorderLayout.CENTER);
         inputPanel.add(sendButton, BorderLayout.EAST);
@@ -86,6 +97,9 @@ public class ChatGui extends JFrame {
         add(mainPanel);
     }
 
+    /**
+     * 追加消息到聊天区域（线程安全）
+     */
     public static void appendMessage(String message) {
         SwingUtilities.invokeLater(() -> {
             messageArea.append(message + "\n");
@@ -93,11 +107,16 @@ public class ChatGui extends JFrame {
         });
     }
 
+    /**
+     * 更新在线用户列表（线程安全）
+     */
     public static void updateUserList(String[] users) {
         SwingUtilities.invokeLater(() -> {
             userListModel.clear();
             for (String user : users) {
-                userListModel.addElement(user);
+                if (!user.isEmpty()) {
+                    userListModel.addElement(user);
+                }
             }
         });
     }

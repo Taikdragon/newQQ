@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c536506d-6ef8-4803-a67d-805140179400" name="更改" comment="V2.3.1">
-      <change afterPath="$PROJECT_DIR$/src/PasswordUtil.java" afterDir="false" />
+    <list default="true" id="c536506d-6ef8-4803-a67d-805140179400" name="更改" comment="V2.3.2">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ChatClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ChatClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ChatGui.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ChatGui.java" afterDir="false" />
@@ -166,7 +165,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740293529962</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="V2.3.2">
+      <option name="closed" value="true" />
+      <created>1740310000357</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1740310000357</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -220,6 +227,7 @@
     <MESSAGE value="V2.2.3" />
     <MESSAGE value="V2.3" />
     <MESSAGE value="V2.3.1" />
-    <option name="LAST_COMMIT_MESSAGE" value="V2.3.1" />
+    <MESSAGE value="V2.3.2" />
+    <option name="LAST_COMMIT_MESSAGE" value="V2.3.2" />
   </component>
 </project>

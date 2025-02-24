@@ -30,17 +30,14 @@ public class JoinGui {
         jPanel = new JPanel();
         jPanel.setLayout(null);
 
-        // 用户名输入框
         jTextField = new JTextField();
         jTextField.setBounds(140, 10, 180, 30);
         jPanel.add(jTextField);
 
-        // 密码输入框
         jPasswordField = new JPasswordField();
         jPasswordField.setBounds(140, 50, 180, 30);
         jPanel.add(jPasswordField);
 
-        // 标签
         JLabel QQhao = new JLabel("QQ号:");
         QQhao.setBounds(100, 10, 50, 20);
         jPanel.add(QQhao);
@@ -49,7 +46,6 @@ public class JoinGui {
         mima.setBounds(105, 50, 50, 20);
         jPanel.add(mima);
 
-        // 复选框
         JCheckBox rememberPasswordCheckBox = new JCheckBox("记住密码");
         rememberPasswordCheckBox.setBounds(180, 80, 80, 20);
         jPanel.add(rememberPasswordCheckBox);
@@ -58,7 +54,6 @@ public class JoinGui {
         autoLoginCheckBox.setBounds(180, 105, 80, 20);
         jPanel.add(autoLoginCheckBox);
 
-        // 按钮
         JButton passwordRecoveryButton = new JButton("找回密码");
         passwordRecoveryButton.setBounds(330, 15, 85, 20);
         jPanel.add(passwordRecoveryButton);
@@ -71,13 +66,11 @@ public class JoinGui {
         resetAccountButton.setBounds(330, 95, 85, 20);
         jPanel.add(resetAccountButton);
 
-        // 登录按钮
         JButton loginButton = new JButton("登录");
         loginButton.setBounds(177, 200, 80, 37);
         loginButton.addActionListener(this::onLoginButtonClicked);
         jPanel.add(loginButton);
 
-        // 按钮事件绑定
         registerButton.addActionListener(e -> showRegistrationForm());
         resetAccountButton.addActionListener(e -> new src.PasswordResetGui(jFrame).setVisible(true));
         passwordRecoveryButton.addActionListener(e -> new src.PasswordRecoveryGui(jFrame).setVisible(true));
@@ -96,7 +89,6 @@ public class JoinGui {
         }
 
         try {
-            // 1. 创建信任所有证书的TrustManager
             TrustManager[] trustAllCerts = new TrustManager[]{
                     new X509TrustManager() {
                         public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
@@ -105,35 +97,29 @@ public class JoinGui {
                     }
             };
 
-            // 2. 初始化SSLContext
             SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
             sslContext.init(null, trustAllCerts, new SecureRandom());
-
-            // 3. 创建SSLSocketFactory
             SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
-            // 4. 建立SSL连接并发送登录请求
-            try (Socket socket = sslSocketFactory.createSocket("192.168.0.103", 12345);
-                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+            Socket socket = sslSocketFactory.createSocket("192.168.0.103", 12345);
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-                // 生成密码哈希
-                String hashedPassword = src.PasswordUtil.hashPassword(password);
-                out.println("LOGIN:" + username + ":" + hashedPassword);
+            String hashedPassword = src.PasswordUtil.hashPassword(password);
+            out.println("LOGIN:" + username + ":" + hashedPassword);
 
-                // 接收服务端响应
-                String response = in.readLine();
-                if (response != null && response.startsWith("SUCCESS")) {
-                    JOptionPane.showMessageDialog(jPanel, "登录成功！", "信息", JOptionPane.INFORMATION_MESSAGE);
-                    jFrame.dispose();
-                    new src.ChatGui(username, socket).setVisible(true);
-                } else {
-                    String errorMsg = (response == null) ? "连接超时" : response.split(":")[1];
-                    JOptionPane.showMessageDialog(jPanel, errorMsg, "错误", JOptionPane.ERROR_MESSAGE);
-                }
+            String response = in.readLine();
+            if (response != null && response.startsWith("SUCCESS")) {
+                JOptionPane.showMessageDialog(jPanel, "登录成功！", "信息", JOptionPane.INFORMATION_MESSAGE);
+                jFrame.dispose();
+                new src.ChatGui(username, socket).setVisible(true);
+            } else {
+                String errorMsg = (response == null) ? "连接超时" : response.split(":")[1];
+                JOptionPane.showMessageDialog(jPanel, errorMsg, "错误", JOptionPane.ERROR_MESSAGE);
+                socket.close();
             }
         } catch (IOException | NoSuchAlgorithmException | KeyManagementException ex) {
-            JOptionPane.showMessageDialog(jPanel, "连接失败: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(jPanel, "连接服务端失败: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         }
     }
