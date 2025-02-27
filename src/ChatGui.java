@@ -77,7 +77,9 @@ public class ChatGui extends JFrame {
                 try {
                     byte[] fileBytes = Files.readAllBytes(file.toPath());
                     String base64Content = Base64.getEncoder().encodeToString(fileBytes);
-                    client.sendMessage("FILE:" + username + ":" + file.getName() + ":" + base64Content);
+                    // 编码文件名
+                    String encodedFileName = Base64.getEncoder().encodeToString(file.getName().getBytes());
+                    client.sendMessage("FILE:" + username + ":" + encodedFileName + ":" + base64Content);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }

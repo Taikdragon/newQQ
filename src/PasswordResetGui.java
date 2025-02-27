@@ -1,12 +1,18 @@
 package src;
 
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.net.*;
+import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.*;
 
 public class PasswordResetGui extends JDialog {
@@ -74,6 +80,7 @@ public class PasswordResetGui extends JDialog {
     }
     */
 
+    /*
     private void onReset(ActionEvent e) {
         String username = usernameField.getText().trim();
         String newPassword = new String(newPasswordField.getPassword());
@@ -105,6 +112,62 @@ public class PasswordResetGui extends JDialog {
 
             socket.close();
         } catch (IOException | NoSuchAlgorithmException ex) {
+            showError("连接服务端失败");
+            ex.printStackTrace();
+        }
+    }
+
+     */
+
+    private void onReset(ActionEvent e) {
+        String username = usernameField.getText().trim();
+        String newPassword = new String(newPasswordField.getPassword());
+
+        try {
+            // 配置 SSLContext 以信任所有证书
+            SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+                        public X509Certificate[] getAcceptedIssuers() { return null; }
+                        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+                        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+                    }
+            };
+            sslContext.init(null, trustAllCerts, new SecureRandom());
+            SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+
+            // 创建 Socket 连接
+            Socket socket = sslSocketFactory.createSocket("26.233.144.223", 12345);
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            // 发送重置命令：RESET_PASSWORD:用户名:新密码哈希
+            String newHash = src.UserStorage.hashPassword(newPassword);
+            out.println("RESET_PASSWORD:" + username + ":" + newHash);
+
+            // 接收服务端响应
+            String response = in.readLine();
+            if (response == null) {
+                showError("服务端无响应");
+                return;
+            }
+
+            String[] parts = response.split(":", 2);
+            if (parts.length < 2) {
+                showError("响应格式错误");
+                return;
+            }
+
+            if (parts[0].equals("SUCCESS")) {
+                statusLabel.setText("密码重置成功");
+                statusLabel.setForeground(Color.BLUE);
+            } else {
+                statusLabel.setText(parts[1]);
+                statusLabel.setForeground(Color.RED);
+            }
+
+            socket.close();
+        } catch (IOException | NoSuchAlgorithmException | KeyManagementException ex) {
             showError("连接服务端失败");
             ex.printStackTrace();
         }

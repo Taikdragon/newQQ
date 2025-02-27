@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="newQQ:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/newQQ_jar</output-path>
+    <root id="archive" name="newQQ.jar">
+      <element id="module-output" name="newQQ" />
+    </root>
+  </artifact>
+</component>

@@ -101,7 +101,7 @@ public class JoinGui {
             sslContext.init(null, trustAllCerts, new SecureRandom());
             SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
-            Socket socket = sslSocketFactory.createSocket("192.168.0.103", 12345);
+            Socket socket = sslSocketFactory.createSocket("26.233.144.223", 12345);
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
