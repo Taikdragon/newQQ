@@ -9,14 +9,19 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Base64;
+import java.util.TimerTask;
+import java.util.Timer;
+
 
 public class ChatGui extends JFrame {
     private static JTextArea messageArea;
-    private JTextField inputField;
+    private static JTextField inputField;
     private src.ChatClient client;
     private String username;
     private static DefaultListModel<String> userListModel;
     private static JList<String> userList;
+    private static JButton sendButton;
+    private static Timer unmuteTimer;
 
     public ChatGui(String username, Socket socket) {
         this.username = username;
@@ -54,7 +59,8 @@ public class ChatGui extends JFrame {
         // 输入面板
         JPanel inputPanel = new JPanel(new BorderLayout());
         inputField = new JTextField();
-        JButton sendButton = new JButton("发送");
+        //JButton sendButton = new JButton("发送");
+        sendButton = new JButton("发送");
         JButton fileButton = new JButton("发送文件");
 
         // 发送消息动作
@@ -135,12 +141,58 @@ public class ChatGui extends JFrame {
      * 处理系统消息（如踢出通知）
      */
     private static void handleSystemMessage(String message) {
-        String content = message.substring(7); // 移除 "SYSTEM:" 前缀
+        String content = message.substring(7);
+
+        // 1. 处理踢出消息
         if (content.contains("你已被管理员踢出")) {
-            JOptionPane.showMessageDialog(null, "你已被管理员踢出", "警告", JOptionPane.ERROR_MESSAGE);
-            System.exit(0); // 强制关闭客户端
+            JOptionPane.showMessageDialog(null, content, "警告", JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+        }
+
+        // 2. 处理禁言消息
+        else if (content.contains("你已被禁言")) {
+            int minutes = Integer.parseInt(content.replaceAll("[^0-9]", ""));
+            JOptionPane.showMessageDialog(null, content, "系统通知", JOptionPane.WARNING_MESSAGE);
+
+            // 禁用输入框和发送按钮
+            inputField.setEnabled(false);
+            sendButton.setEnabled(false);
+
+            // 取消之前的定时器（防止重复）
+            if (unmuteTimer != null) {
+                unmuteTimer.cancel();
+                unmuteTimer = null; // 重置引用
+            }
+
+            // 创建新定时器（使用 java.util.Timer）
+            unmuteTimer = new Timer();
+            unmuteTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    SwingUtilities.invokeLater(() -> {
+                        inputField.setEnabled(true);
+                        sendButton.setEnabled(true);
+                        appendMessage("SYSTEM:禁言已解除，可以正常发言");
+                    });
+                }
+            }, minutes * 60 * 1000);
+        }
+
+        // 3. 处理服务端发送的禁言解除通知
+        else if (content.contains("的禁言已解除")) {
+            SwingUtilities.invokeLater(() -> {
+                inputField.setEnabled(true);
+                sendButton.setEnabled(true);
+                appendMessage("SYSTEM:禁言已解除，可以正常发言");
+            });
+        }
+
+        // 4. 其他系统消息
+        else {
+            messageArea.append("[系统] " + content + "\n");
         }
     }
+
 
     private static void handleFileMessage(String message) {
         try {
