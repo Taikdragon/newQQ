@@ -11,6 +11,7 @@
   <component name="ChangeListManager">
     <list default="true" id="c536506d-6ef8-4803-a67d-805140179400" name="更改" comment="V2.6 可发送文件">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ChatClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ChatClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ChatGui.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ChatGui.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -53,7 +54,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "V2.2bugout",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "F:/Chat/newQQcilentUser2",
+    "last_opened_file_path": "F:/Chat/newQQcilentUser1 - 副本 - 副本",
     "onboarding.tips.debug.path": "E:/forge/newQQ/src/Main.java",
     "project.structure.last.edited": "工件",
     "project.structure.proportion": "0.0",

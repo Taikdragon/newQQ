@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.TimerTask;
 import java.util.Timer;
@@ -64,11 +65,42 @@ public class ChatGui extends JFrame {
         JButton fileButton = new JButton("发送文件");
 
         // 发送消息动作
+        // 修改后的发送消息动作
         Action sendAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String message = inputField.getText().trim();
-                if (!message.isEmpty()) {
+                if (message.startsWith("/")) {
+                    if (message.equals("/help")) {
+                        showHelpDialog();
+                        return;
+                    } else if (message.startsWith("/changepwd ")) {
+                        String newPwd = message.substring(11);
+                        if (newPwd.isEmpty()) {
+                            JOptionPane.showMessageDialog(ChatGui.this, "新密码不能为空", "错误", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        try {
+                            // 捕获 NoSuchAlgorithmException
+                            String hashedPwd = src.PasswordUtil.hashPassword(newPwd);
+                            client.sendMessage("RESET_PASSWORD:" + username + ":" + hashedPwd);
+                        } catch (NoSuchAlgorithmException ex) {
+                            JOptionPane.showMessageDialog(ChatGui.this,
+                                    "密码加密失败：SHA-256算法不可用",
+                                    "错误",
+                                    JOptionPane.ERROR_MESSAGE);
+                            ex.printStackTrace();
+                        }
+                        return;
+                    } else if (message.startsWith("/who")) {
+                        client.sendMessage("/who");
+                    } else if (message.startsWith("/history ")) {
+                        client.sendMessage(message);
+                    } else {
+                        JOptionPane.showMessageDialog(ChatGui.this, "未知命令", "错误", JOptionPane.ERROR_MESSAGE);
+                    }
+                    return;
+                } else if (!message.isEmpty()) {
                     client.sendMessage("CHAT:" + username + ":" + message);
                     appendMessage("我: " + message);
                     inputField.setText("");
@@ -123,6 +155,11 @@ public class ChatGui extends JFrame {
     public static void appendMessage(String message) {
         SwingUtilities.invokeLater(() -> {
 
+            if(message.startsWith("USERS:")) {
+                String[] users = message.split(":")[1].split(",");
+                updateUserList(users);
+                return;
+            }
             if(message.startsWith("FILE:")) {
                 handleFileMessage(message);
                 return;
@@ -130,6 +167,10 @@ public class ChatGui extends JFrame {
             if(message.startsWith("SYSTEM:")){
                 handleSystemMessage(message);
                 return;
+            }
+            if(message.startsWith("HISTORY:")) {
+                String history = message.split(":", 2)[1];
+                messageArea.append("\n=== 历史消息 ===\n" + history + "=================\n");
             }
 
             messageArea.append(message + "\n");
@@ -184,6 +225,10 @@ public class ChatGui extends JFrame {
                 inputField.setEnabled(true);
                 sendButton.setEnabled(true);
                 appendMessage("SYSTEM:禁言已解除，可以正常发言");
+                if (unmuteTimer != null) {
+                    unmuteTimer.cancel();
+                    unmuteTimer = null;
+                }
             });
         }
 
@@ -193,6 +238,16 @@ public class ChatGui extends JFrame {
         }
     }
 
+    private void showHelpDialog() {
+        String helpText = """
+        可用命令：
+        /help - 显示帮助
+        /who - 查看在线用户
+        /changepwd <新密码> - 修改密码
+        /history <条数> - 查看历史消息
+        """;
+        JOptionPane.showMessageDialog(this, helpText, "帮助", JOptionPane.INFORMATION_MESSAGE);
+    }
 
     private static void handleFileMessage(String message) {
         try {

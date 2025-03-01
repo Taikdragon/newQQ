@@ -22,7 +22,16 @@ public class ChatClient {
      * 发送消息到服务端
      */
     public void sendMessage(String message) {
-        out.println(message);
+        if (message.startsWith("/who")) {
+            // 修正协议格式：LIST_USERS:用户名
+            out.println("LIST_USERS:" + username);
+        } else if (message.startsWith("/history ")) {
+            String count = message.substring(9);
+            // 修正协议格式：HISTORY:用户名:条数
+            out.println("HISTORY:" + username + ":" + count);
+        } else {
+            out.println(message);
+        }
     }
 
     /**
