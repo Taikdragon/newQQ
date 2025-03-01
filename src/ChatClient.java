@@ -75,15 +75,12 @@ public class ChatClient {
         public void run() {
             try {
                 String response;
-                while ((response = in.readLine()) != null) {  // 持续监听消息
+                while ((response = in.readLine()) != null) {
                     if (response.startsWith("USERS:")) {
-                        // 处理用户列表更新
                         String[] users = response.split(":")[1].split(",");
-                        final String[] finalUsers = users; // 显式声明为final
-                        SwingUtilities.invokeLater(() -> src.ChatGui.updateUserList(finalUsers));
+                        SwingUtilities.invokeLater(() -> src.ChatGui.updateUserList(users));
                     } else {
-                        // 处理普通消息
-                        final String finalResponse = response; // 创建临时final变量
+                        final String finalResponse = response;
                         SwingUtilities.invokeLater(() -> src.ChatGui.appendMessage(finalResponse));
                     }
                 }
@@ -91,7 +88,7 @@ public class ChatClient {
                 System.out.println("与服务器的连接已断开");
             } finally {
                 try {
-                    socket.close();  // 确保关闭连接
+                    socket.close();
                 } catch (IOException e) {
                     // Ignore
                 }

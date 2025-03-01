@@ -6,8 +6,9 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Base64;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Base64;
 
 public class ChatGui extends JFrame {
     private static JTextArea messageArea;
@@ -24,7 +25,7 @@ public class ChatGui extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // 初始化用户列表模型和组件
+        // 初始化用户列表
         userListModel = new DefaultListModel<>();
         userList = new JList<>(userListModel);
         userList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -70,16 +71,30 @@ public class ChatGui extends JFrame {
         };
 
         // 文件发送按钮事件
+        // 文件发送按钮事件监听器
         fileButton.addActionListener(e -> {
+            String targetUser = userList.getSelectedValue();
+            if (targetUser == null) {
+                JOptionPane.showMessageDialog(ChatGui.this, "请先选择接收文件的用户", "错误", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             JFileChooser fileChooser = new JFileChooser();
             if (fileChooser.showOpenDialog(ChatGui.this) == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
                 try {
                     byte[] fileBytes = Files.readAllBytes(file.toPath());
                     String base64Content = Base64.getEncoder().encodeToString(fileBytes);
-                    // 编码文件名
-                    String encodedFileName = Base64.getEncoder().encodeToString(file.getName().getBytes());
-                    client.sendMessage("FILE:" + username + ":" + encodedFileName + ":" + base64Content);
+                    String encodedFileName = Base64.getEncoder().encodeToString(
+                            file.getName().getBytes(StandardCharsets.UTF_8)
+                    );
+
+                    // 关键修改：添加 "FILE:" 前缀
+                    String message = "FILE:" + targetUser + ":" + encodedFileName + ":" + base64Content;
+                    client.sendMessage(message);
+
+                    // 调试日志
+                    System.out.println("[DEBUG] 发送文件消息: " + message);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -99,19 +114,64 @@ public class ChatGui extends JFrame {
         add(mainPanel);
     }
 
-    /**
-     * 追加消息到聊天区域（线程安全）
-     */
     public static void appendMessage(String message) {
         SwingUtilities.invokeLater(() -> {
+
+            if(message.startsWith("FILE:")) {
+                handleFileMessage(message);
+                return;
+            }
+            if(message.startsWith("SYSTEM:")){
+                handleSystemMessage(message);
+                return;
+            }
+
             messageArea.append(message + "\n");
             messageArea.setCaretPosition(messageArea.getDocument().getLength());
         });
     }
 
     /**
-     * 更新在线用户列表（线程安全）
+     * 处理系统消息（如踢出通知）
      */
+    private static void handleSystemMessage(String message) {
+        String content = message.substring(7); // 移除 "SYSTEM:" 前缀
+        if (content.contains("你已被管理员踢出")) {
+            JOptionPane.showMessageDialog(null, "你已被管理员踢出", "警告", JOptionPane.ERROR_MESSAGE);
+            System.exit(0); // 强制关闭客户端
+        }
+    }
+
+    private static void handleFileMessage(String message) {
+        try {
+            String[] parts = message.split(":", 5); // 格式: FILE:发送者:文件名(base64):内容(base64)
+            String sender = parts[1];
+            String targetUser = parts[2];
+            String encodedFileName = parts[3];
+            String fileContent = parts[4];
+
+            // 解码文件名和内容
+            String fileName = new String(
+                    Base64.getDecoder().decode(encodedFileName),
+                    StandardCharsets.UTF_8
+            );
+            byte[] fileBytes = Base64.getDecoder().decode(fileContent);
+
+            // 弹出文件保存对话框
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setSelectedFile(new File(fileName));
+            int userChoice = fileChooser.showSaveDialog(null);
+
+            if (userChoice == JFileChooser.APPROVE_OPTION) {
+                File saveFile = fileChooser.getSelectedFile();
+                Files.write(saveFile.toPath(), fileBytes);
+                messageArea.append("[系统] 文件已保存至: " + saveFile.getAbsolutePath() + "\n");
+            }
+        } catch (Exception e) {
+            messageArea.append("[错误] 文件接收失败: " + e.getMessage() + "\n");
+        }
+    }
+
     public static void updateUserList(String[] users) {
         SwingUtilities.invokeLater(() -> {
             userListModel.clear();
