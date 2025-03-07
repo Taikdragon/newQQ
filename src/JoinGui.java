@@ -66,6 +66,10 @@ public class JoinGui {
         resetAccountButton.setBounds(330, 95, 85, 20);
         jPanel.add(resetAccountButton);
 
+        JButton IPButton = new JButton("服务器IP");
+        IPButton.setBounds(330, 135, 85, 20);
+        jPanel.add(IPButton);
+
         JButton loginButton = new JButton("登录");
         loginButton.setBounds(177, 200, 80, 37);
         loginButton.addActionListener(this::onLoginButtonClicked);
@@ -74,6 +78,7 @@ public class JoinGui {
         registerButton.addActionListener(e -> showRegistrationForm());
         resetAccountButton.addActionListener(e -> new src.PasswordResetGui(jFrame).setVisible(true));
         passwordRecoveryButton.addActionListener(e -> new src.PasswordRecoveryGui(jFrame).setVisible(true));
+        IPButton.addActionListener(e -> new src.IPreset(jFrame).setVisible(true));
 
         jFrame.add(jPanel);
         jFrame.setVisible(true);

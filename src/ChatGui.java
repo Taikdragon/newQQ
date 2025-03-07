@@ -170,6 +170,7 @@ public class ChatGui extends JFrame {
             }
             if(message.startsWith("HISTORY:")) {
                 String history = message.split(":", 2)[1];
+                // 根本不知道格式有什么问题
                 messageArea.append("\n=== 历史消息 ===\n" + history + "=================\n");
             }
 
@@ -199,7 +200,7 @@ public class ChatGui extends JFrame {
             inputField.setEnabled(false);
             sendButton.setEnabled(false);
 
-            // 取消之前的定时器（防止重复）
+            // 取消之前的定时器（防止重复）666
             if (unmuteTimer != null) {
                 unmuteTimer.cancel();
                 unmuteTimer = null; // 重置引用
