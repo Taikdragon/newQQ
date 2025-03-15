@@ -137,7 +137,11 @@ public class PasswordResetGui extends JDialog {
             SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
             // 创建 Socket 连接
-            Socket socket = sslSocketFactory.createSocket("26.233.144.223", 12345);
+
+            String serverIP = src.ServerConfig.getServerIP();
+            Socket socket = sslSocketFactory.createSocket(serverIP, 12345);
+
+            //Socket socket = sslSocketFactory.createSocket("26.233.144.223", 12345);
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 

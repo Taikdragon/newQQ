@@ -17,7 +17,7 @@ import java.security.cert.X509Certificate;
 public class PasswordRecoveryGui extends JDialog {
     private JTextField usernameField;
     private JLabel resultLabel;
-    private static final String SERVER_IP = "26.233.144.223"; // 服务端 IP
+    //private static final String SERVER_IP = "26.233.144.223"; // 服务端 IP
     private static final int SERVER_PORT = 12345;            // 服务端端口
 
     public PasswordRecoveryGui(JFrame parent) {
@@ -136,7 +136,8 @@ public class PasswordRecoveryGui extends JDialog {
             SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
             // 使用 SSLSocket 连接
-            Socket socket = sslSocketFactory.createSocket(SERVER_IP, SERVER_PORT);
+            String serverIP = src.ServerConfig.getServerIP();
+            Socket socket = sslSocketFactory.createSocket(serverIP, SERVER_PORT);
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 

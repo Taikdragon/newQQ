@@ -1,44 +1,70 @@
 package src;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.*;
-import java.net.*;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
-import java.util.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 public class IPreset extends JDialog {
-
-    private JTextField whatIP;
+    private JTextField ipField;
 
     public IPreset(JFrame parent) {
-        super(parent, "服务器IP", true);
-        setSize(350, 250);
+        super(parent, "服务器IP设置", true);
+        setSize(350, 200);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        JPanel panel = new JPanel(new GridLayout(4, 1, 10, 10));
+        JPanel panel = new JPanel(new GridLayout(3, 1, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        // 用户名输入
-        JPanel IPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        IPanel.add(new JLabel("服务器IP:"));
-        whatIP = new JTextField(15);
-        IPanel.add(whatIP);
-        panel.add(IPanel);
+        // IP输入
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        inputPanel.add(new JLabel("服务器IP:"));
+        ipField = new JTextField(15);
+        ipField.setText(loadSavedIP()); // 加载已保存的IP
+        inputPanel.add(ipField);
+        panel.add(inputPanel);
 
-        JButton IPresetButton = new JButton("确定");
-        panel.add(IPresetButton);
+        // 确定按钮
+        JButton confirmButton = new JButton("确定");
+        confirmButton.addActionListener(this::saveIP);
+        panel.add(confirmButton);
 
-
+        add(panel);
     }
 
+    private void saveIP(ActionEvent e) {
+        String newIP = ipField.getText().trim();
+        if (!newIP.isEmpty()) {
+            try (FileOutputStream out = new FileOutputStream("server_config.properties")) {
+                Properties prop = new Properties();
+                prop.setProperty("server.ip", newIP);
+                prop.store(out, "Server Configuration");
+                JOptionPane.showMessageDialog(this, "IP已保存！", "成功", JOptionPane.INFORMATION_MESSAGE);
+                System.out.println("[控制台]：IP已保存！");
+                dispose();
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "保存失败: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "IP不能为空！", "错误", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private String loadSavedIP() {
+        // 默认IP，如果配置文件不存在则返回此值
+        //return "26.233.144.223";
+
+        try (FileInputStream input = new FileInputStream("server_config.properties")) {
+            Properties prop = new Properties();
+            prop.load(input);
+            return prop.getProperty("server.ip", "26.233.144.223"); // 默认IP
+        } catch (Exception e) {
+            return "26.233.144.223";
+        }
+
+    }
 }
